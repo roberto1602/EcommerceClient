@@ -1,8 +1,5 @@
-﻿using Business;
-using Business.UploadFile.Interface;
+﻿using Business.UploadFile.Interface;
 using Entities;
-using Entities.ModelDto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Utils;
 
@@ -13,14 +10,9 @@ namespace EcommerceClient.Controllers
     public class UploadFileController : ControllerBase
     {
         private readonly IUploadFile _uploadFile;  
-        private readonly string _serverRoute;
-        private readonly string _cadenaSql;
         public UploadFileController(IConfiguration configuration, IUploadFile uploadFile)
         {
             _uploadFile = uploadFile;
-            _serverRoute = configuration.GetSection("Configuration").GetSection("ServerRoute").Value!;
-            _cadenaSql = configuration.GetConnectionString("DataSource")!;
-
         }
 
 
