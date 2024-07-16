@@ -1,5 +1,6 @@
 ﻿using Business.RegisterUser.Interface;
 using Entities.ModelDto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utils;
 
@@ -7,6 +8,7 @@ namespace EcommerceClient.Controllers
 {
     [Route("api/user")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IBusinessLoginUser _businessLoginUser;

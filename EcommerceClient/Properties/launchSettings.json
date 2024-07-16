@@ -27,7 +27,7 @@
       "applicationUrl": "https://localhost:7163;http://localhost:5204",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DataSource": "Data Source=***"
+        "DataSource": "Data Source=ROBERTMURI16\\SQLEXPRESS;Initial Catalog=ecommerceDB;Integrated Security=True;Encrypt=False;Trust Server Certificate=True"
       }
     },
     "IIS Express": {
@@ -37,6 +37,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    } 
+    }
   }
 }
