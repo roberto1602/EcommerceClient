@@ -20,24 +20,17 @@ namespace Business
             _jwtSettings = jwtSettings.Value;
         }
 
-        public dynamic GenerarTokenJWT(UserDto user)
+        public string GenerateToken(UserDto user)
         {
-            var data = JsonConvert.DeserializeObject<dynamic>(user.ToString()!);
-            var result = new Result<UserDto>();
-
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             //se especifica todo lo que se encapsula en el token
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, _jwtSettings.Subject!),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                new Claim("password", user.Password!),
-                new Claim("email", user.Email!)
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Anonymous, user.Password!)
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
-            var singIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             //crear token
             var token = new JwtSecurityToken(
@@ -45,16 +38,12 @@ namespace Business
                 _jwtSettings.Audience,
                 claims,
                 expires: DateTime.Now.AddMinutes(60),
-                signingCredentials: singIn
+                signingCredentials: credentials
                 );
 
-            return new
-            {
-                success = true,
-                message = "exito",
-                result = new JwtSecurityTokenHandler().WriteToken(token)
-            };
-        }
+            var jwtSecurity = new JwtSecurityTokenHandler().WriteToken(token);
 
+            return jwtSecurity;
+        }
     }
 }

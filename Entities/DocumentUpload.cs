@@ -16,6 +16,6 @@ namespace Entities
 
         [Column("route")]
         public string? Route { get; set; }
-        public IFormFile? DocumentFile { get; set; }
+       // public IFormFile? DocumentFile { get; set; }
     }
 }

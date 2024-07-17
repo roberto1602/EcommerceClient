@@ -9,14 +9,10 @@ using Utils;
 
 namespace Business.UploadFile.Implementation
 {
-    public class UploadFile : UResult, IUploadFile
+    public class UploadFile(IUploadFileData uploadFileData) : UResult, IUploadFile
     {
-        private readonly IUploadFileData _uploadFileData;
-        
-        public UploadFile(IUploadFileData uploadFileData)
-        {
-            _uploadFileData = uploadFileData;
-        }
+        private readonly IUploadFileData _uploadFileData = uploadFileData;
+
         public async Task<Result<DocumentUpload>> SaveFile(IFormFile file)
         {
             var result = new Result<DocumentUpload>();

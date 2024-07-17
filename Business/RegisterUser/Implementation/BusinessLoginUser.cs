@@ -5,7 +5,11 @@ using Entities.configuration;
 using Entities.ModelDto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.ExceptionServices;
+using System.Security.Claims;
+using System.Text;
 using Utils;
 
 namespace Business.RegisterUser.Implementation
@@ -14,27 +18,25 @@ namespace Business.RegisterUser.Implementation
     {
         private readonly IDataLoginUser _dataLoginUser;
         private readonly JwtSettings _jwtSettings;
-
         public BusinessLoginUser(IDataLoginUser dataLoginUser, IOptions<JwtSettings> jwtSettings)
         {
             _dataLoginUser = dataLoginUser;
             _jwtSettings = jwtSettings.Value;
         }
+
         public async Task<Result<UserDto>> GetCredentialUser(string identification)
         {
             var result = new Result<UserDto>();
-           var tokenJWT = new TokenJWT((IOptions<JwtSettings>)_jwtSettings);
-
             try
             {
                 if (!ValidateUser(identification))
                     return Error<UserDto>("parameters are not specified", null);
 
-                var responseUser = await _dataLoginUser.GetCredentialUser(identification);
-                
-                result.Values = MapUsers(responseUser.Values!);
-                var getToken = tokenJWT.GenerarTokenJWT(result.Values);
+                var userToken = await _dataLoginUser.GetCredentialUser(identification);
 
+                                
+                result.Values = MapUsers(userToken.Values!);
+                GenerateToken(result.Values);
 
                 //if (responseUser.Values == null)
                 //    return Error<UserDto>(StatusCodes.Status404NotFound.ToString("transaccion no realizada"));
@@ -45,9 +47,36 @@ namespace Business.RegisterUser.Implementation
                 ExceptionDispatchInfo.Capture(ex).Throw();
             }
             result = Ok(StatusCodes.Status200OK.ToString(), result.Values);
+
             return result;
         }
 
+
+        public string GenerateToken(UserDto user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            //se especifica todo lo que se encapsula en el token
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Anonymous, user.Password!)
+            };
+
+            //crear token
+            var token = new JwtSecurityToken(
+                _jwtSettings.Issuer,
+                _jwtSettings.Audience,
+                claims,
+                expires: DateTime.Now.AddMinutes(60),
+                signingCredentials: credentials
+                );
+
+            var jwtSecurity = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwtSecurity;
+        }
 
         private static bool ValidateUser(string identification)
         {

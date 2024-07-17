@@ -15,13 +15,13 @@ namespace Data.LoginUser.Implementation
         {
             _contexMain = contexMain;
         }
-        public async Task<Result<User>> GetCredentialUser(string identification)
+        public async Task<Result<User>>GetCredentialUser(string identification)
         {
             var result = new Result<User>();
 
             try
             {
-                var userQuery = _contexMain.Users
+                var userQuery =  _contexMain.Users
                .Where(u => u.NumberIdentification == identification)
                .Select(u => new User
                {

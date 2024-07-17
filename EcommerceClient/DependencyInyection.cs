@@ -32,12 +32,13 @@ namespace EcommerceClient
         private static IServiceCollection AddServicesBusiness(this IServiceCollection services, IConfiguration config) 
         {
             services.AddTransient<IBusinessLoginUser, BusinessLoginUser>();
+            services.Configure<JwtSettings>(config.GetSection($"Jwt"));
+
             services.AddTransient<IBusinessFileDownLoad, BusinessFileDownLoad>();
 
             services.AddTransient<IUploadFile, UploadFile>();
             services.Configure<ServerRouteSettings>(config.GetSection($"ServerRoute:Route"));
 
-            services.Configure<JwtSettings>(config.GetSection($"Jwt"));
 
             return services;
         }

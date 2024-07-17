@@ -1,6 +1,5 @@
 ﻿using Business.DownloadFile.Interface;
 using Entities.ModelDto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Utils;
 
